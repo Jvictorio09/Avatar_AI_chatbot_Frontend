@@ -97,6 +97,20 @@ export const UI = ({ hidden }) => {
         .assistant--airy{ background: rgba(255,255,255,.86); color: var(--ink); border: none; }
         .mic-ring{ animation: pulse 1.6s infinite; box-shadow: 0 0 0 0 rgba(26,102,255,.45); }
         @keyframes pulse{ 0%{ box-shadow: 0 0 0 0 rgba(26,102,255,.45);} 70%{ box-shadow: 0 0 0 14px rgba(26,102,255,0);} 100%{ box-shadow: 0 0 0 0 rgba(26,102,255,0);} }
+
+        /* smooth top/bottom fade for scroll areas using CSS mask (Chrome/Safari/Edge) */
+        .mask-fade-y {
+          -webkit-mask-image: linear-gradient(to bottom,
+            rgba(0,0,0,0) 0%,
+            rgba(0,0,0,1) 22px,
+            rgba(0,0,0,1) calc(100% - 26px),
+            rgba(0,0,0,0) 100%);
+                  mask-image: linear-gradient(to bottom,
+            rgba(0,0,0,0) 0%,
+            rgba(0,0,0,1) 22px,
+            rgba(0,0,0,1) calc(100% - 26px),
+            rgba(0,0,0,0) 100%);
+        }
       `}</style>
 
       {/* Steve behind everything on desktop */}
@@ -130,43 +144,45 @@ export const UI = ({ hidden }) => {
         {/* Chat column over the avatar */}
         <div className="absolute inset-x-0 bottom-0 pointer-events-auto">
           {/* messages */}
-          <div className="max-h-[48vh] overflow-y-auto px-4 pb-3 space-y-3">
-            {history.length === 0 && (
-              <div
-                className="inline-block max-w-[86%] px-4 py-3 rounded-2xl"
-                style={{
-                  backdropFilter: "blur(12px)",
-                  background: "rgba(255,255,255,0.78)",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.3)"
-                }}
-              >
-                Hello! How can I help you?
-              </div>
-            )}
-            {history.map((m, i) => (
-              <div key={`${m.ts}-${i}`} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+          <div className="relative">
+            <div className="max-h-[26vh] overflow-y-auto px-4 pb-3 space-y-3 mask-fade-y">
+              {history.length === 0 && (
                 <div
-                  className={`max-w-[86%] px-4 py-3 rounded-2xl ${m.role === "user" ? "user bubble rounded-br-md" : ""}`}
-                  style={
-                    m.role === "assistant"
-                      ? {
-                          backdropFilter: "blur(12px)",
-                          background: "rgba(255,255,255,0.78)",
-                          boxShadow:
-                            "0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.3)",
-                        }
-                      : undefined
-                  }
+                  className="inline-block max-w-[86%] px-4 py-3 rounded-2xl"
+                  style={{
+                    backdropFilter: "blur(12px)",
+                    background: "rgba(255,255,255,0.78)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.3)"
+                  }}
                 >
-                  {m.text}
+                  Hello! How can I help you?
                 </div>
-              </div>
-            ))}
-            {!!interim && isListening && (
-              <div className="flex justify-end">
-                <div className="user bubble rounded-2xl max-w-[86%] px-4 py-2">{interim}</div>
-              </div>
-            )}
+              )}
+              {history.map((m, i) => (
+                <div key={`${m.ts}-${i}`} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[86%] px-4 py-3 rounded-2xl ${m.role === "user" ? "user bubble rounded-br-md" : ""}`}
+                    style={
+                      m.role === "assistant"
+                        ? {
+                            backdropFilter: "blur(12px)",
+                            background: "rgba(255,255,255,0.78)",
+                            boxShadow:
+                              "0 4px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.3)",
+                          }
+                        : undefined
+                    }
+                  >
+                    {m.text}
+                  </div>
+                </div>
+              ))}
+              {!!interim && isListening && (
+                <div className="flex justify-end">
+                  <div className="user bubble rounded-2xl max-w-[86%] px-4 py-2">{interim}</div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* input bar */}
@@ -321,28 +337,37 @@ export const UI = ({ hidden }) => {
 
           {/* chat column */}
           <div className="pointer-events-auto w-[min(720px,94vw)] mx-auto pb-[max(24px,env(safe-area-inset-bottom))]">
-            <div className="max-h-[54vh] overflow-y-auto px-4 pt-[88px] pb-3 space-y-3">
-              {history.length === 0 && (
-                <div className="assistant bubble rounded-2xl px-4 py-3 text-[14.5px]">
-                  Hello! How can I help you?
-                </div>
-              )}
-              {history.map((m, i) => (
-                <div key={`${m.ts}-${i}`} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div
-                    className={`bubble max-w-[86%] px-4 py-3 rounded-2xl ${
-                      m.role === "user" ? "user rounded-br-md" : "assistant rounded-bl-md"
-                    }`}
-                  >
-                    {m.text}
+            <div className="relative">
+              <div className="max-h-[24vh] overflow-y-auto px-4 pt-[88px] pb-3 space-y-3 mask-fade-y">
+                {history.length === 0 && (
+                  <div className="assistant bubble rounded-2xl px-4 py-3 text-[14.5px]">
+                    Hello! How can I help you?
                   </div>
-                </div>
-              ))}
-              {!!interim && isListening && (
-                <div className="flex justify-end">
-                  <div className="bubble user rounded-2xl max-w-[86%] px-4 py-2">{interim}</div>
-                </div>
-              )}
+                )}
+                {history.map((m, i) => (
+                  <div
+                    key={`${m.ts}-${i}`}
+                    className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                    <div
+                      className={`bubble max-w-[86%] px-4 py-3 rounded-2xl ${
+                        m.role === "user"
+                          ? "user rounded-br-md"
+                          : "assistant rounded-bl-md"
+                      }`}
+                    >
+                      {m.text}
+                    </div>
+                  </div>
+                ))}
+                {!!interim && isListening && (
+                  <div className="flex justify-end">
+                    <div className="bubble user rounded-2xl max-w-[86%] px-4 py-2">
+                      {interim}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="px-3">
